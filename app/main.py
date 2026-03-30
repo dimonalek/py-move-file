@@ -10,20 +10,22 @@ def move_file(command: str) -> None:
         return
     if source == destination:
         return
-    if "/" not in destination:
-        os.rename(source, destination)
+    destination_norm = destination.replace("/", "\\")
+    if destination_norm.endswith("\\"):
+        destination_path_list = destination_norm.split("\\")
+        os.makedirs(os.path.join(*destination_path_list), exist_ok=True)
+        full_path = os.path.join(destination_norm, source)
+        with open(full_path, "w") as file, open(source, "r") as source_file:
+            file.write(source_file.read())
+        os.remove(source)
+    elif "\\" in destination_norm:
+        destination_path_list = destination_norm.split("\\")
+        os.makedirs(os.path.join(*destination_path_list[:-1]), exist_ok=True)
+        full_path = os.path.join(*destination_path_list)
+        with open(full_path, "w") as file, open(source, "r") as source_file:
+            file.write(source_file.read())
+        os.remove(source)
     else:
-        destination_dir = destination.split("/")
-        destination_file = destination_dir[-1]
-        destination_dir.pop()
-        destination_dir = "/".join(destination_dir)
-        if not os.path.exists(destination_dir):
-            os.makedirs(destination_dir)
-        with open(
-            source, "r"
-        ) as source_file, open(
-            destination, "w"
-        ) as destination_file:
-            for line in source_file:
-                destination_file.write(line)
+        with open(destination, "w") as file, open(source, "r") as source_file:
+            file.write(source_file.read())
         os.remove(source)
