@@ -14,8 +14,6 @@ def move_file(command: str) -> None:
         destination = os.path.join(destination, os.path.basename(source))
     else:
         destination = os.path.normpath(destination)
-        print(destination)
-        print(os.path.dirname(destination))
     if os.path.dirname(destination) != "":
         os.makedirs(os.path.dirname(destination), exist_ok=True)
     os.rename(source, destination)
